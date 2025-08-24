@@ -13,8 +13,14 @@ func hello(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/hello", hello)
-	fmt.Printf("Server is listening on port %s\n", PORT)
-	http.ListenAndServe(PORT, nil)
+	router := http.NewServeMux()
+	router.HandleFunc("/hello", hello)
 
+	server := http.Server{
+		Addr:    PORT,
+		Handler: router,
+	}
+
+	fmt.Printf("Server is listening on port %s\n", PORT)
+	server.ListenAndServe()
 }
