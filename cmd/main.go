@@ -3,19 +3,16 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	"myFirstHttpServer/internal/auth"
 )
 
 var PORT = ":8081"
 
-func hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Hello World!")
-
-}
-
 func main() {
+	//conf := configs.LoadConfig()
 	router := http.NewServeMux()
-	router.HandleFunc("/hello", hello)
-
+	auth.NewAuthHandler(router)
 	server := http.Server{
 		Addr:    PORT,
 		Handler: router,
