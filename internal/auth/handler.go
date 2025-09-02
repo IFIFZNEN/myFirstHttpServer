@@ -1,12 +1,11 @@
 package auth
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"regexp"
 
 	"myFirstHttpServer/configs"
+	"myFirstHttpServer/pkg/req"
 	"myFirstHttpServer/pkg/res"
 )
 
@@ -27,34 +26,29 @@ func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 }
 
 func (handler *AuthHandler) Login() http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		var payload LoginRequest
-		err := json.NewDecoder(req.Body).Decode(&payload)
-		if payload.Email == "" || payload.Password == "" {
-			res.Json(w, "Email and Pass are required", 402)
-			return
-		}
-		match, err := regexp.MatchString(`[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}`, payload.Email)
-		if !match {
-			res.Json(w, "Wrong email", 402)
-			return
-		}
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, err := req.HandleBody[LoginRequest](&w, r)
 		if err != nil {
-			res.Json(w, err.Error(), 402)
 			return
 		}
-		fmt.Println(payload)
-		fmt.Println(handler.Config.Auth.Secret)
-		fmt.Println("Страница логина")
+		fmt.Println(body)
 		data := LoginResponse{
-			Token: "123",
+			"123",
 		}
 		res.Json(w, data, 200)
 	}
 }
 
 func (handler *AuthHandler) Register() http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		fmt.Println("Страница регистрации")
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, err := req.HandleBody[RegisterRequest](&w, r)
+		if err != nil {
+			return
+		}
+		fmt.Println(body)
+		data := RegisterResponse{
+			Token: "1234567890",
+		}
+		res.Json(w, data, 200)
 	}
 }
