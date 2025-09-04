@@ -6,12 +6,14 @@ import (
 
 	"myFirstHttpServer/configs"
 	"myFirstHttpServer/internal/auth"
+	"myFirstHttpServer/pkg/db"
 )
 
 var PORT = ":8081"
 
 func main() {
 	conf := configs.LoadConfig()
+	_ = db.NewDB(conf)
 	router := http.NewServeMux()
 	auth.NewAuthHandler(router, auth.AuthHandlerDeps{
 		Config: conf,
